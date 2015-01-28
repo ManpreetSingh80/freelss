@@ -99,7 +99,7 @@ int mpfit_gauss(int m, int n, double *p, double *deviates, double **derivs, void
 
 ImageProcessor::ImageProcessor()
 {
-	m_laserRanges = new ImageProcessor::LaserRange[Camera::getInstance()->getImageWidth() + 1];
+	m_laserRanges = new ImageProcessor::LaserRange[Camera::getInstance()->getImageWidth() + 1];		
 
 	Settings * settings = Settings::get();
 	m_laserMagnitudeThreshold = settings->readReal(Settings::GENERAL_SETTINGS, Settings::LASER_MAGNITUDE_THRESHOLD);
@@ -122,7 +122,7 @@ int ImageProcessor::process(const Image& before, const Image& after, Image * deb
 
 	numSuspectedBadLaserLocations += numBad;
 
-	return numLocations;
+	return numLocations;							//no of red dots/red lines
 }
 
 // We want to detect a red, white, to red transition in the image
@@ -133,8 +133,8 @@ int ImageProcessor::subProcess(const Image& before, const Image& after, Image * 
 	const real MAX_MAGNITUDE_SQ = 255 * 255 * 3; // The maximum pixel magnitude sq we can see
 	const real INV_MAX_MAGNITUDE_SQ = 1.0f / MAX_MAGNITUDE_SQ;
 
-	unsigned char * a = before.getPixels();
-	unsigned char * b = after.getPixels();
+	unsigned char * a = before.getPixels();					//before laser
+	unsigned char * b = after.getPixels();					//after laser
 	unsigned char * d = NULL;
 
 	std::fstream rowOut;
@@ -165,16 +165,16 @@ int ImageProcessor::subProcess(const Image& before, const Image& after, Image * 
 	unsigned char * ar = a;
 	unsigned char * br = b;
 	unsigned char * dr = d;
-	for (unsigned iRow = 0; iRow < height && numLocations < maxNumLocations; iRow++)
+	for (unsigned iRow = 0; iRow < height && numLocations < maxNumLocations; iRow++)			//loop for row scan
 	{
 		// The column that the laser started and ended on
-		int numLaserRanges = 0;
-		m_laserRanges[numLaserRanges].startCol = -1;
-		m_laserRanges[numLaserRanges].endCol = -1;
+		int numLaserRanges = 0;						//no of laser widths detected in coloumn
+		m_laserRanges[numLaserRanges].startCol = -1;			//start of laser width
+		m_laserRanges[numLaserRanges].endCol = -1;			//end of laser width
 
 		int numRowOut = 0;
-		int imageColumn = 0;
-		for (unsigned iCol = 0; iCol < rowStep; iCol += components)
+		int imageColumn = 0;						//current location of pixel in col
+		for (unsigned iCol = 0; iCol < rowStep; iCol += components)				//loop for col
 		{
 			// Perform image subtraction
 #if 0
@@ -182,15 +182,15 @@ int ImageProcessor::subProcess(const Image& before, const Image& after, Image * 
 			const int magSq = r * r;
 			unsigned char mag = 255.0f * (magSq * 0.000015379f);
 #else
-			const int r = (int)br[iCol + 0] - (int)ar[iCol + 0];
+			const int r = (int)br[iCol + 0] - (int)ar[iCol + 0];				//difference in pixel before and after laser
 			const int g = (int)br[iCol + 1] - (int)ar[iCol + 1];
 			const int b = (int)br[iCol + 2] - (int)ar[iCol + 2];
 			const int magSq = r * r + g * g + b * b;
-			real mag = 255.0f * (magSq * INV_MAX_MAGNITUDE_SQ);
+			real mag = 255.0f * (magSq * INV_MAX_MAGNITUDE_SQ);				
 #endif
 			if (writeDebugImage)
 			{
-				if (mag > laserThreshold)
+				if (mag > laserThreshold)						//if possible laser location,color it
 				{
 					dr[iCol + 0] = mag;
 					dr[iCol + 1] = mag;
@@ -202,7 +202,7 @@ int ImageProcessor::subProcess(const Image& before, const Image& after, Image * 
 					dr[iCol + 1] = mag;
 					dr[iCol + 2] = 0;
 				}
-				else
+				else									//else,color black
 				{
 					dr[iCol + 0] = 0;
 					dr[iCol + 1] = 0;
@@ -211,12 +211,12 @@ int ImageProcessor::subProcess(const Image& before, const Image& after, Image * 
 			}
 
 			// Compare it against the threshold
-			if (mag > laserThreshold)
+			if (mag > laserThreshold)							//if possible laser location
 			{
 				// The start of pixels with laser in them
-				if (m_laserRanges[numLaserRanges].startCol == -1)
+				if (m_laserRanges[numLaserRanges].startCol == -1)			//if starting point of laser width
 				{
-					m_laserRanges[numLaserRanges].startCol = imageColumn;
+					m_laserRanges[numLaserRanges].startCol = imageColumn;		//index of starting point of laser width
 				}
 
 				if (debuggingCsvFile != NULL)
@@ -226,17 +226,17 @@ int ImageProcessor::subProcess(const Image& before, const Image& after, Image * 
 				}
 			}
 			// The end of pixels with laser in them
-			else if (m_laserRanges[numLaserRanges].startCol != -1)
+			else if (m_laserRanges[numLaserRanges].startCol != -1)				//ending point of laser
 			{
 				int laserWidth = imageColumn - m_laserRanges[numLaserRanges].startCol;
-				if (laserWidth <= m_maxLaserWidth && laserWidth >= m_minLaserWidth)
+				if (laserWidth <= m_maxLaserWidth && laserWidth >= m_minLaserWidth)		//if not noise
 				{
 					// If this range was real close to the previous one, merge them instead of creating a new one
 					bool wasMerged = false;
-					if (numLaserRanges > 0)
+					if (numLaserRanges > 0)							//in case multiple laser widths detected
 					{
-						unsigned rangeDistance =  m_laserRanges[numLaserRanges].startCol - m_laserRanges[numLaserRanges - 1].endCol;
-						if (rangeDistance < RANGE_DISTANCE_THRESHOLD)
+						unsigned rangeDistance =  m_laserRanges[numLaserRanges].startCol - m_laserRanges[numLaserRanges - 1].endCol;		//distance between adjacent laser widths
+						if (rangeDistance < RANGE_DISTANCE_THRESHOLD)										//merge widths
 						{
 							 m_laserRanges[numLaserRanges - 1].endCol =  imageColumn;
 							 m_laserRanges[numLaserRanges - 1].centerCol = round((m_laserRanges[numLaserRanges - 1].startCol + m_laserRanges[numLaserRanges - 1].endCol) / 2);
@@ -246,7 +246,7 @@ int ImageProcessor::subProcess(const Image& before, const Image& after, Image * 
 					}
 
 					// Proceed to the next laser range
-					if (!wasMerged)
+					if (!wasMerged)					//ending point of laser width
 					{
 						// Add this range as a candidate
 						m_laserRanges[numLaserRanges].endCol = imageColumn;
@@ -260,7 +260,7 @@ int ImageProcessor::subProcess(const Image& before, const Image& after, Image * 
 					m_laserRanges[numLaserRanges].endCol = -1;
 				}
 				// There was a false positive
-				else
+				else					//discard noise
 				{
 					m_laserRanges[numLaserRanges].startCol = -1;
 				}
@@ -277,7 +277,7 @@ int ImageProcessor::subProcess(const Image& before, const Image& after, Image * 
 		}
 
 		// If we have a valid laser region
-		if (numLaserRanges > 0)
+		if (numLaserRanges > 0)					//if multiple laser widths remains even after merging,select best
 		{
 			int rangeChoice = detectBestLaserRange(m_laserRanges, numLaserRanges, prevLaserCol);
 			prevLaserCol = m_laserRanges[rangeChoice].centerCol;
@@ -290,7 +290,7 @@ int ImageProcessor::subProcess(const Image& before, const Image& after, Image * 
 			// If this is the first row that a laser is detected in, set the firstRowLaserCol member
 			if (numLocations == 0)
 			{
-				firstRowLaserCol = m_laserRanges[rangeChoice].startCol;
+				firstRowLaserCol = m_laserRanges[rangeChoice].startCol;			//set prevLaserCol for next image
 			}
 
 			numLocations++;
@@ -332,7 +332,7 @@ real ImageProcessor::detectLaserRangeCenter(const ImageProcessor::LaserRange& ra
 	int endCol = range.endCol;
 	int components = 3;
 
-#if CENTERMASS_FILTER
+#if CENTERMASS_FILTER							//center from weighed mean
 	float totalSum = 0.0;
 	float weightedSum = 0.0;
 	int cCol = 0;
@@ -422,7 +422,7 @@ real ImageProcessor::detectLaserRangeCenter(const ImageProcessor::LaserRange& ra
 #endif
 
 
-#if PEAK_FILTER  // Half-width for Center of full laser range
+#if PEAK_FILTER  // Half-width for Center of full laser range			//distance from maximum intensity/mag
 	int maxMagSq = 0;
 	int numSameMax = 0;
 	for (int bCol = startCol; bCol <= endCol; bCol++)
@@ -460,7 +460,7 @@ int ImageProcessor::detectBestLaserRange(ImageProcessor::LaserRange * ranges, in
 	// Select based off of minimum distance to last laser position
 	for (int i = 1; i < numRanges; i++)
 	{
-		int dist = ABS(ranges[i].centerCol - prevLaserCol);
+		int dist = ABS(ranges[i].centerCol - prevLaserCol);		//isn't it valid for only first row?
 		if (dist < distanceOfBest)
 		{
 			bestRange = i;
@@ -471,7 +471,7 @@ int ImageProcessor::detectBestLaserRange(ImageProcessor::LaserRange * ranges, in
 	return bestRange;
 }
 
-void ImageProcessor::toHsv(unsigned char r, unsigned char g, unsigned char b, Hsv * hsv)
+void ImageProcessor::toHsv(unsigned char r, unsigned char g, unsigned char b, Hsv * hsv)			//Calculate HSV
 {
 	// Compute the Value
 	unsigned char max = MAX3(r, g, b);
