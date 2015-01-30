@@ -50,7 +50,7 @@ StlWriter::StlWriter() :
 	m_normal[2] = 0;
 }
 
-void StlWriter::computeAverage(const std::vector<NeutralFileRecord>& bin, NeutralFileRecord& out)
+void StlWriter::computeAverage(const std::vector<NeutralFileRecord>& bin, NeutralFileRecord& out)		//Calculate Average of input entries and store to output file
 {
 	out = bin.front();
 
