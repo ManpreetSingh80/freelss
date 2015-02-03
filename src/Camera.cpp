@@ -45,7 +45,7 @@ Camera::~Camera()
 	// Do nothing
 }
 
-Camera * Camera::getInstance()
+Camera * Camera::getInstance()					//create Camera instance basedon camera type
 {
 	m_cs.enter();
 	try
@@ -86,7 +86,7 @@ Camera * Camera::getInstance()
 	return m_instance;
 }
 
-void Camera::release()
+void Camera::release()							//delete instance
 {
 	m_cs.enter();
 	try
@@ -102,7 +102,7 @@ void Camera::release()
 	m_cs.leave();
 }
 
-void Camera::reinitialize()
+void Camera::reinitialize()				//reinitialize camera/set properties of Camera
 {
 	// Read the camera type from settings
 	Camera::CameraMode cameraMode = (Camera::CameraMode) Settings::get()->readInt(Settings::GENERAL_SETTINGS, Settings::CAMERA_MODE);
