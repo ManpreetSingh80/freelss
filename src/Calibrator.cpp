@@ -88,7 +88,7 @@ bool Calibrator::detectLaserX(real * laserX, PixelLocation& topLocation, PixelLo
 	int maxNumLocations = camera->getImageHeight();
 	PixelLocation * laserLocations = new PixelLocation[maxNumLocations];
 
-	try
+	try								
 	{
 		numLocations = imageProcessor.process(baseImage,
 				laserImage,
@@ -114,13 +114,13 @@ bool Calibrator::detectLaserX(real * laserX, PixelLocation& topLocation, PixelLo
 			// Only look at the last 100 or so pixels in the image so that we don't
 			// detect the laser reflecting off walls and things in the background
 			// TODO: Make this detection range ie. 300 and 100 a Setting
-			if (!foundTopLocation && location.y > (maxNumLocations - 300) && location.y < (maxNumLocations - 100))
+			if (!foundTopLocation && location.y > (maxNumLocations - 300) && location.y < (maxNumLocations - 100))		//topLocation is location of pixel at maxNumLocations-300
 			{
 				topLocation = location;
 				foundTopLocation = true;
 			}
 
-			if (maxLocation == NULL || location.y > maxLocation->y)
+			if (maxLocation == NULL || location.y > maxLocation->y)			//bottomLocation is location until location!=Null
 			{
 				maxLocation = &location;
 				bottomLocation = location;
@@ -174,10 +174,10 @@ real Calibrator::computeLaserX(real cameraZ, real xPixel, real yPixel)
 	real pctX = xPixel / imageWidth;
 	real pctY = (imageHeight - yPixel) / imageHeight;
 	real worldX = cameraX + (pctX * sensorWidth) - sensorWidth * 0.5;
-	real worldY = cameraY + (pctY * sensorWidth) - sensorHeight * 0.5;
+	real worldY = cameraY + (pctY * sensorWidth) - sensorHeight * 0.5;	//cameraHeight + (bottomLocation from middle of image in pixels)
 	real worldZ = cameraZ - focalLength;
 
-	Ray ray;
+	Ray ray;								//ray from Camera to world co-ordinates
 	ray.origin.x = cameraX;
 	ray.origin.y = cameraY;
 	ray.origin.z = cameraZ;
@@ -191,7 +191,7 @@ real Calibrator::computeLaserX(real cameraZ, real xPixel, real yPixel)
 	// Intersect the XZ plane
 	//
 
-	Plane xzPlane;
+	Plane xzPlane;						//xz plane containing origin
 	xzPlane.normal.x = 0;
 	xzPlane.normal.y = 1;
 	xzPlane.normal.z = 0;
@@ -201,7 +201,7 @@ real Calibrator::computeLaserX(real cameraZ, real xPixel, real yPixel)
 
 	Vector3 intersection;
 
-	if (intersectPlane(ray, xzPlane, &intersection) == false)
+	if (intersectPlane(ray, xzPlane, &intersection) == false)				//if ray and plane are parallel
 	{
 		throw Exception("XY plane was not intersected");
 	}
@@ -209,7 +209,7 @@ real Calibrator::computeLaserX(real cameraZ, real xPixel, real yPixel)
 	//
 	// Intersect the camera image plane to get the laser location
 	//
-	Plane camPlane;
+	Plane camPlane;						//xy plane containing camera
 	camPlane.normal.x = 0;
 	camPlane.normal.y = 0;
 	camPlane.normal.z = -1;
@@ -218,7 +218,7 @@ real Calibrator::computeLaserX(real cameraZ, real xPixel, real yPixel)
 	camPlane.point.z = cameraZ;
 
 	// The laser is assumed to be aligned to the center of the turn table
-	Ray camPlaneRay;
+	Ray camPlaneRay;					//ray from origin to intersection point
 	camPlaneRay.origin.x = 0;
 	camPlaneRay.origin.y = 0;
 	camPlaneRay.origin.z = 0;
@@ -229,7 +229,7 @@ real Calibrator::computeLaserX(real cameraZ, real xPixel, real yPixel)
 	{
 		throw Exception("Camera plane was not intersected");
 	}
-
+//if intersect,return intersection point
 	std::cout << "Detected laser at (" << intersection.x / 25.4 << "," << intersection.y / 25.4 << ","
 			  << intersection.z / 25.4 << ") in. from pixel ("
 			  << xPixel << "," << yPixel << ") and camera Z of " << cameraZ / 25.4 << "in. "
@@ -238,7 +238,7 @@ real Calibrator::computeLaserX(real cameraZ, real xPixel, real yPixel)
 	return intersection.x;
 }
 
-bool Calibrator::intersectPlane(const Ray& inRay, const Plane& plane, Vector3 * intersection)
+bool Calibrator::intersectPlane(const Ray& inRay, const Plane& plane, Vector3 * intersection)	//check if ray and plane are parallel? If not, find intersection points
 {
 	// Reference: http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-plane-and-ray-disk-intersection/
 	// d = ((p0 - l0) * n) / (l * n)
