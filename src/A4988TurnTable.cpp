@@ -26,7 +26,7 @@
 namespace scanner
 {
 
-A4988TurnTable::A4988TurnTable()
+A4988TurnTable::A4988TurnTable()				//get all settings
 {
 	Settings * settings = Settings::get();
 	m_responseDelay = settings->readInt(Settings::A4988_SETTINGS, Settings::RESPONSE_DELAY);
@@ -47,6 +47,7 @@ A4988TurnTable::~A4988TurnTable()
 
 void A4988TurnTable::initialize()
 {
+	//get settings
 	Settings * settings = Settings::get();
 	int responseDelay = settings->readInt(Settings::A4988_SETTINGS, Settings::RESPONSE_DELAY);
 	int enablePin = settings->readInt(Settings::A4988_SETTINGS, Settings::ENABLE_PIN);
@@ -67,7 +68,7 @@ void A4988TurnTable::initialize()
 	Thread::usleep(responseDelay);
 }
 
-void A4988TurnTable::step()
+void A4988TurnTable::step()			//take step
 {
 	digitalWrite(m_stepPin, LOW);
 	Thread::usleep(m_responseDelay);
@@ -79,7 +80,7 @@ void A4988TurnTable::step()
 	Thread::usleep(m_stepDelay);
 }
 
-int A4988TurnTable::rotate(real theta)
+int A4988TurnTable::rotate(real theta)					//rotate the turn-table to the desired angle
 {
 	// Get the percent of a full revolution that theta is and convert that to number of steps
 	int numSteps = (theta / (2 * PI)) * m_stepsPerRevolution;
@@ -96,7 +97,7 @@ int A4988TurnTable::rotate(real theta)
 	return numSteps;
 }
 
-void A4988TurnTable::setMotorEnabled(bool enabled)
+void A4988TurnTable::setMotorEnabled(bool enabled)					//Enable or Disable Motor
 {
 	int value = enabled ? LOW : HIGH;
 
