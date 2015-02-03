@@ -73,7 +73,7 @@ unsigned Image::getPixelBufferSize() const
 	return m_width * m_height * m_numComponents;
 }
 
-void Image::convertToJpeg(const Image& image, byte* buffer, unsigned * size)
+void Image::convertToJpeg(const Image& image, byte* buffer, unsigned * size)			//compress image to jpeg
 {
 	size_t bufferSize = * size;
 
@@ -118,7 +118,7 @@ void Image::convertToJpeg(const Image& image, byte* buffer, unsigned * size)
 }
 
 
-void Image::writeJpeg(const Image& image, const std::string& filename)
+void Image::writeJpeg(const Image& image, const std::string& filename)			//write image as filename.jpeg
 {
 	std::cout << "Writing " << filename << "..." << std::endl;
 
@@ -156,7 +156,7 @@ void Image::writeJpeg(const Image& image, const std::string& filename)
 	free(imageData);
 }
 
-void Image::overlayPixels(Image& image, PixelLocation * locations, int numLocations)
+void Image::overlayPixels(Image& image, PixelLocation * locations, int numLocations)	/** Overlay the given pixels as full red on top of the given image */
 {
 	int width = image.getWidth();
 	int height = image.getHeight();
