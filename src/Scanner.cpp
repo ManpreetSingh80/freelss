@@ -90,12 +90,12 @@ Scanner::~Scanner()
 	delete [] m_columnPoints;
 }
 
-void Scanner::setTask(Scanner::Task task)
+void Scanner::setTask(Scanner::Task task)		/** The operation that the scanner should perform */
 {
 	m_task = task;
 }
 
-bool Scanner::isRunning()
+bool Scanner::isRunning()				/** Indicates if a scan is running or not */
 {
 	bool running;
 
@@ -106,7 +106,7 @@ bool Scanner::isRunning()
 	return running;
 }
 
-real Scanner::getProgress()
+real Scanner::getProgress()				/** Returns the progress of the current scan from 0 to 1 */
 {
 	real progress;
 
@@ -128,7 +128,7 @@ real Scanner::getRemainingTime()
 	return remainingTime;
 }
 
-void Scanner::setDetail(int detail)
+void Scanner::setDetail(int detail)				//set min stepsPerRevolution
 {
 	int stepsPerRevolution = Settings::get()->readInt(Settings::GENERAL_SETTINGS, Settings::STEPS_PER_REVOLUTION);
 	if (detail <= stepsPerRevolution && detail > 0)
@@ -137,7 +137,7 @@ void Scanner::setDetail(int detail)
 	}
 }
 
-void Scanner::setRange(real range)
+void Scanner::setRange(real range)					//Angle of Scan to perform
 {
 	if (range > 360)
 	{
@@ -153,7 +153,7 @@ void Scanner::setRange(real range)
 	}
 }
 
-void Scanner::prepareScan()
+void Scanner::prepareScan()				// Prepares the object for scanning.
 {
 	m_status.enter();
 	m_running = true;
@@ -202,14 +202,14 @@ void Scanner::run()
 
 	m_filename = sstr.str();
 
-	m_numSuspectedBadLaserLocations = 0;
+	m_numSuspectedBadLaserLocations = 0;						//noisy or bad points scanned
 
 	m_firstRowRightLaserCol = m_camera->getImageWidth() * 0.5;
 	m_firstRowLeftLaserCol = m_camera->getImageWidth() * 0.5;
 
 	Scanner::TimingStats timingStats;
-	memset(&timingStats, 0, sizeof(Scanner::TimingStats));
-	timingStats.startTime = GetTimeInSeconds();
+	memset(&timingStats, 0, sizeof(Scanner::TimingStats));				//set to zero
+	timingStats.startTime = GetTimeInSeconds();					//store time
 	double time1 = 0;
 
 	Settings * settings = Settings::get();
@@ -231,7 +231,7 @@ void Scanner::run()
 	m_cameraLoc.y = settings->readReal(Settings::GENERAL_SETTINGS, Settings::CAMERA_Y);
 	m_cameraLoc.z = settings->readReal(Settings::GENERAL_SETTINGS, Settings::CAMERA_Z);
 
-	LocationMapper leftLocMapper(m_leftLaserLoc, m_cameraLoc);
+	LocationMapper leftLocMapper(m_leftLaserLoc, m_cameraLoc);		//objects for right laser % Left laser ocation mapping
 	LocationMapper rightLocMapper(m_rightLaserLoc, m_cameraLoc);
 
 	// Compute the angle between the two laser planes
@@ -291,49 +291,49 @@ void Scanner::run()
 		float rotation = 0;
 
 		// Read the number of motor steps per revolution
-		int stepsPerRevolution = Settings::get()->readInt(Settings::GENERAL_SETTINGS, Settings::STEPS_PER_REVOLUTION);
+		int stepsPerRevolution = Settings::get()->readInt(Settings::GENERAL_SETTINGS, Settings::STEPS_PER_REVOLUTION);		//default:6400
 
-		float rangeRadians =  (m_range / 360) * (2 * PI);
+		float rangeRadians =  (m_range / 360) * (2 * PI);			//default:2*pi
 
-		int maxSamplesPerRevolution = m_detail;
+		int maxSamplesPerRevolution = m_detail;					//default:800
 		if (maxSamplesPerRevolution < 1)
 		{
 			maxSamplesPerRevolution = 1;
 		}
 
 		// The number of steps for a single scan
-		int stepsPerScan = ceil(stepsPerRevolution / (float)maxSamplesPerRevolution);
+		int stepsPerScan = ceil(stepsPerRevolution / (float)maxSamplesPerRevolution);		//default:8
 		if (stepsPerScan < 1)
 		{
 			stepsPerScan = 1;
 		}
 
 		// The number of radians a single step takes you
-		m_radiansPerStep = ((2 * PI) / (float) stepsPerRevolution);
+		m_radiansPerStep = ((2 * PI) / (float) stepsPerRevolution);				//default:2*pi/6400
 
 		// The radians to move for a single scan
-		float scanRadians = stepsPerScan * m_radiansPerStep;
+		float scanRadians = stepsPerScan * m_radiansPerStep;				//default:2*pi/800
 
-		int numSteps = ceil(rangeRadians / scanRadians);
+		int numSteps = ceil(rangeRadians / scanRadians);				//default:800
 
 		// Start the output thread
-		m_scanResultsWriter.setBaseFilePath(m_filename);
+		m_scanResultsWriter.setBaseFilePath(m_filename);			//call to ScanResultsWriter
 		std::cout << "Starting output thread..." << std::endl;
 		time1 = GetTimeInSeconds();
-		m_scanResultsWriter.execute();
+		m_scanResultsWriter.execute();						//execute thread
 		timingStats.fileWritingTime += GetTimeInSeconds() - time1;
 		std::cout << "Output thread started" << std::endl;
 
-		m_numScansBetweenLaserPlanes = rangeRadians / m_radiansBetweenLaserPlanes;
+		m_numScansBetweenLaserPlanes = rangeRadians / m_radiansBetweenLaserPlanes;			//default:2*pi/(LeftLaserAngle+RightLaserAngle)
 
 		std::cout << "Angle between laser planes: " << RADIANS_TO_DEGREES(m_radiansBetweenLaserPlanes)
 				  << " degrees, radiansPerStep=" << m_radiansPerStep
 				  << ", numScansBetweenLaserPlanes=" << m_numScansBetweenLaserPlanes
 				  << ", numSamples=" << numSteps << std::endl;
 
-		for (int iStep = 0; iStep < numSteps; iStep++)
+		for (int iStep = 0; iStep < numSteps; iStep++)					//iStep=0:800
 		{
-			timingStats.numScans++;
+			timingStats.numScans++;					//add entry
 
 			// Stop if the user asked us to
 			if (m_stopRequested)
