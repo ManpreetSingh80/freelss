@@ -63,11 +63,11 @@ int main(int argc, char **argv)
 		scanner::RelayLaser::initialize();
 
 		int port = 80;
-		scanner::HttpServer::get()->start(port);
+		scanner::HttpServer::get()->start(port);			//start server
 
 		std::cout << "Running on port " << port << "..." << std::endl;
 		char input;
-		while (true)
+		while (true)							//prevent timeout/Session expiration 
 		{
 			std::cin >> input;
 			if (input == 'Q')
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 namespace scanner
 {
 
-time_t ScanResult::getScanDate() const
+time_t ScanResult::getScanDate() const				//get scandate
 {
 	if (files.empty())
 	{
@@ -115,7 +115,7 @@ time_t ScanResult::getScanDate() const
 	return files.front().creationTime;
 }
 
-double GetTimeInSeconds()
+double GetTimeInSeconds()					
 {
 	struct timeval tv;
 	if (gettimeofday(&tv, NULL) != 0)
