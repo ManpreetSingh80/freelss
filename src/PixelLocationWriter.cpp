@@ -24,7 +24,7 @@
 
 namespace scanner
 {
-
+/** Writes the pixels as a PNG file */
 void PixelLocationWriter::writePixels(const PixelLocation * pixels,
 		                              int numPixels,
 		                              int imageWidth,
@@ -80,7 +80,9 @@ void PixelLocationWriter::writePixels(const PixelLocation * pixels,
 	png_write_end(png_ptr, NULL);
 	fclose(fp);
 }
-
+/**
+	 * Rescales and writes an image as a PNG file.
+	 */
 void PixelLocationWriter::writeImage(const Image& image, int dstWidth, int dstHeight, const std::string& pngFilename)
 {
 	std::cout << "Writing " << pngFilename << "..." << std::endl;
