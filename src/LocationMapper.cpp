@@ -25,7 +25,7 @@
 namespace scanner
 {
 
-LocationMapper::LocationMapper(const Vector3& laserLoc, const Vector3& cameraLoc) :
+LocationMapper::LocationMapper(const Vector3& laserLoc, const Vector3& cameraLoc) :		//get camera properties and location
 	m_laserX(laserLoc.x),
 	m_laserY(laserLoc.y),
 	m_laserZ(laserLoc.z),
@@ -42,7 +42,7 @@ LocationMapper::LocationMapper(const Vector3& laserLoc, const Vector3& cameraLoc
 
 	calculateLaserPlane();
 }
-
+//check valid points by back ray tracing
 void LocationMapper::mapPoints(PixelLocation * laserLocations,
 		                       const Image * image,
 		                       ColoredPoint * points,
@@ -62,9 +62,9 @@ void LocationMapper::mapPoints(PixelLocation * laserLocations,
 	int numComponents = 0;
 	if (image != NULL)
 	{
-		pixels = image->getPixels();
-		numComponents = image->getNumComponents();
-		rowStep = image->getWidth() * numComponents;
+		pixels = image->getPixels();				//store Image Pixels
+		numComponents = image->getNumComponents();			
+		rowStep = image->getWidth() * numComponents;		//No. of pixels in each row*numComponents
 	}
 
 	bool haveImage = pixels != NULL;
@@ -72,22 +72,22 @@ void LocationMapper::mapPoints(PixelLocation * laserLocations,
 	int pixelStart = -1;
 
 	// Initialize our output variable
-	outNumLocations = 0;
-	for (int iLoc = 0; iLoc < numLocations; iLoc++)
+	outNumLocations = 0;					//it will contain valid laser dots or Locations
+	for (int iLoc = 0; iLoc < numLocations; iLoc++)				//numLocations contains the index of red laser dots
 	{
 		// Compute the back projection ray
 		calculateCameraRay(laserLocations[iLoc], &ray);
 
 		// Intersect the laser plane and populate the XYZ
-		ColoredPoint * point = &points[outNumLocations];
+		ColoredPoint * point = &points[outNumLocations];			//point or location of red dots
 		if(intersectLaserPlane(ray, point, laserLocations[iLoc]))
 		{
 			// The point must be above the turn table and less than the max distance from the center of the turn table
 			real distXZSq = point->x * point->x + point->z * point->z;
 
-			if (point->y >= 0.0 && distXZSq < MAX_DIST_XZ_SQ && point->y < MAX_DIST_Y)
+			if (point->y >= 0.0 && distXZSq < MAX_DIST_XZ_SQ && point->y < MAX_DIST_Y)	//if distance satisfied
 			{
-				// Set the color
+				// Set the color at laser dots
 				if (haveImage)
 				{
 					// TODO: Do we need to round this x and y value here?
@@ -123,7 +123,7 @@ void LocationMapper::mapPoints(PixelLocation * laserLocations,
 	}
 }
 
-void LocationMapper::calculateLaserPlane()
+void LocationMapper::calculateLaserPlane()		//xz plane containing laser and origin
 {
 	// The origin is a point in the plane
 	m_laserPlane.point.x = 0;
@@ -139,7 +139,7 @@ void LocationMapper::calculateLaserPlane()
 	m_laserPlane.normal.normalize();
 }
 
-void LocationMapper::calculateCameraRay(const PixelLocation& imagePixel,  Ray * ray)
+void LocationMapper::calculateCameraRay(const PixelLocation& imagePixel,  Ray * ray)		//calculate ray from point to camera
 {
 	// Performance Note: Most of this could be pre-computed
 	// and all the division could be removed.
@@ -147,17 +147,17 @@ void LocationMapper::calculateCameraRay(const PixelLocation& imagePixel,  Ray * 
 	// and distance to camera
 	
 	// We subtract by one because the image is 0 indexed
-	real x = imagePixel.x / (real)(m_imageWidth - 1);
+	real x = imagePixel.x / (real)(m_imageWidth - 1);			//get distance in Pixel Ratio
 	
 	// Subtract the height so it goes from bottom to top
 	real y = (m_imageHeight - imagePixel.y) / (real)(m_imageHeight - 1);
 	
 	// The center of the sensor is at 0 in the X dimension
-	x = (x * m_sensorWidth) - (m_sensorWidth * 0.5) + m_cameraX;
+	x = (x * m_sensorWidth) - (m_sensorWidth * 0.5) + m_cameraX;			//distance in mm
 	y = (y * m_sensorHeight) - (m_sensorHeight * 0.5) + m_cameraY;
 	real z = m_cameraZ - m_focalLength;
 
-	// Store the ray origin
+	// Store the ray origin							ray from laser dot to camera
 	ray->origin.x = x;
 	ray->origin.y = y;
 	ray->origin.z = z;
@@ -169,7 +169,7 @@ void LocationMapper::calculateCameraRay(const PixelLocation& imagePixel,  Ray * 
 	ray->direction.normalize();
 }
 
-bool LocationMapper::intersectLaserPlane(const Ray& ray, ColoredPoint * point, const PixelLocation& pixel)
+bool LocationMapper::intersectLaserPlane(const Ray& ray, ColoredPoint * point, const PixelLocation& pixel)	//if ray and laser plane are parallel,return false,else compute intersection point
 {
 	// Reference: http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-plane-and-ray-disk-intersection/
 	// d = ((p0 - l0) * n) / (l * n)
@@ -190,7 +190,7 @@ bool LocationMapper::intersectLaserPlane(const Ray& ray, ColoredPoint * point, c
 	v.y = m_laserPlane.point.y - ray.origin.y;
 	v.z = m_laserPlane.point.z - ray.origin.z;
 	
-	real numerator = v.dot(m_laserPlane.normal);
+	real numerator = v.dot(m_laserPlane.normal);		//normal to plane containing origin and laser
 	
 	// Compute the distance along the ray to the plane
 	real d = numerator / denominator;
