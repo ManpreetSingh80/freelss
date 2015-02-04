@@ -162,7 +162,7 @@ void NeutralFileWriter::prepareStatement()		//prepare sql statement
 	}
 }
 
-void NeutralFileWriter::commit()			//end ttansaction and finalize/delete statement
+void NeutralFileWriter::commit()			//end transaction and finalize/delete statement
 {
 	if (m_stmt == NULL)
 	{
