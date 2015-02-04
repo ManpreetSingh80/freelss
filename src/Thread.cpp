@@ -57,7 +57,7 @@ Thread::~Thread()
 	// Do nothing
 }
 
-void Thread::execute()
+void Thread::execute()				/** Begins execution of the thread */
 {
 	m_stopRequested = false;
 
@@ -67,7 +67,7 @@ void Thread::execute()
 	}
 }
 
-void Thread::join()
+void Thread::join()					/** Blocks the active thread until this thread ends */
 {
 	if (pthread_join(m_handle, NULL) != 0)
 	{
@@ -75,12 +75,12 @@ void Thread::join()
 	}
 }
 
-void Thread::stop()
+void Thread::stop()				/** Indicates to the thread that we want it to stop but does not forcefully kill it */
 {
 	m_stopRequested = true;
 }
 
-void Thread::usleep(unsigned long microseconds)
+void Thread::usleep(unsigned long microseconds)		/** Sleeps the active thread the specified number of MICROSECONDS */
 {
 	if (::usleep(microseconds) != 0)
 	{
