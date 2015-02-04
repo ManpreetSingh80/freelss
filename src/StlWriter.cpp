@@ -26,7 +26,7 @@
 namespace scanner
 {
 
-static real32 DistanceSquared(const ColoredPoint& a, const ColoredPoint&b)
+static real32 DistanceSquared(const ColoredPoint& a, const ColoredPoint&b)			//distance square between two points
 {
 	real32 dx = a.x - b.x;
 	real32 dy = a.y - b.y;
@@ -35,7 +35,7 @@ static real32 DistanceSquared(const ColoredPoint& a, const ColoredPoint&b)
 	return dx * dx + dy * dy + dz * dz;
 }
 
-static bool SortRecordByRow(const NeutralFileRecord& a, const NeutralFileRecord& b)
+static bool SortRecordByRow(const NeutralFileRecord& a, const NeutralFileRecord& b)		//function for sql sorting
 {
 	return a.pixel.y < b.pixel.y;
 }
@@ -92,7 +92,7 @@ void StlWriter::computeAverage(const std::vector<NeutralFileRecord>& bin, Neutra
 	out.point.b = ptB;
 }
 
-void StlWriter::lowpassFilter(std::vector<NeutralFileRecord>& output, std::vector<NeutralFileRecord>& frame, unsigned maxNumRows, unsigned numRowBins)
+void StlWriter::lowpassFilter(std::vector<NeutralFileRecord>& output, std::vector<NeutralFileRecord>& frame, unsigned maxNumRows, unsigned numRowBins)		//take few records(binsize), average them and continue till no records left
 {
 	output.clear();
 
@@ -148,7 +148,7 @@ void StlWriter::lowpassFilter(std::vector<NeutralFileRecord>& output, std::vecto
 	}
 }
 
-bool StlWriter::readNextStep(std::vector<NeutralFileRecord>& out, const std::vector<NeutralFileRecord>& results, size_t & resultIndex)
+bool StlWriter::readNextStep(std::vector<NeutralFileRecord>& out, const std::vector<NeutralFileRecord>& results, size_t & resultIndex)			//combine records with same pseudostep
 {
 	out.clear();
 
@@ -167,7 +167,7 @@ bool StlWriter::readNextStep(std::vector<NeutralFileRecord>& out, const std::vec
 	return true;
 }
 
-void StlWriter::write(const std::string& baseFilename, const std::vector<NeutralFileRecord>& results, bool connectLastFrameToFirst)
+void StlWriter::write(const std::string& baseFilename, const std::vector<NeutralFileRecord>& results, bool connectLastFrameToFirst)		//main function to write data
 {
 	std::string stlFilename = baseFilename + ".stl";
 	std::ofstream fout (stlFilename.c_str());
@@ -277,7 +277,7 @@ void StlWriter::write(const std::string& baseFilename, const std::vector<Neutral
 	xyz.close();
 }
 
-void StlWriter::writeHeader(std::ofstream& fout)
+void StlWriter::writeHeader(std::ofstream& fout)				//write header string
 {
 	unsigned char header[80];
 	memset(header, 0, sizeof(header));
@@ -306,7 +306,7 @@ foreach column
 
 
  */
-void StlWriter::writeTrianglesForColumn(const std::vector<NeutralFileRecord>& currentFrame, const std::vector<NeutralFileRecord>& lastFrame, std::ofstream& fout, uint32& numTriangles)
+void StlWriter::writeTrianglesForColumn(const std::vector<NeutralFileRecord>& currentFrame, const std::vector<NeutralFileRecord>& lastFrame, std::ofstream& fout, uint32& numTriangles)			//create triangle.If valid,write it to stl file
 {
 	size_t iCur = 0;
 
@@ -364,7 +364,7 @@ void StlWriter::writeTrianglesForColumn(const std::vector<NeutralFileRecord>& cu
 	}
 }
 
-bool StlWriter::isValidTriangle(const ColoredPoint& pt1, const ColoredPoint& pt2, const ColoredPoint& pt3)
+bool StlWriter::isValidTriangle(const ColoredPoint& pt1, const ColoredPoint& pt2, const ColoredPoint& pt3)		//check validity of trianle through distance
 {
 	if (DistanceSquared(pt1, pt2) > m_maxEdgeDistMmSq)
 	{
@@ -382,7 +382,7 @@ bool StlWriter::isValidTriangle(const ColoredPoint& pt1, const ColoredPoint& pt2
 	return true;
 }
 
-void StlWriter::writeTriangle(const ColoredPoint& pt1, const ColoredPoint& pt2, const ColoredPoint& pt3, std::ofstream& fout)
+void StlWriter::writeTriangle(const ColoredPoint& pt1, const ColoredPoint& pt2, const ColoredPoint& pt3, std::ofstream& fout)			//write triangle in stl file
 {
 	real32 pt1x = pt1.x;
 	real32 pt1y = pt1.y;
@@ -408,7 +408,7 @@ void StlWriter::writeTriangle(const ColoredPoint& pt1, const ColoredPoint& pt2, 
 	fout.write((const char *)&m_attribute, sizeof(uint16));
 }
 
-void StlWriter::populateBuffer(NeutralFileRecord * records, int numRecords, NeutralFileRecord ** buffer, int maxNumRecords)
+void StlWriter::populateBuffer(NeutralFileRecord * records, int numRecords, NeutralFileRecord ** buffer, int maxNumRecords)		//create empty buffer of required size
 {
 	// Set all the pointers in buffer to NULL
 	memset(buffer, 0, sizeof(NeutralFileRecord *) * maxNumRecords);
