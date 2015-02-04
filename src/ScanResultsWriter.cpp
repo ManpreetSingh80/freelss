@@ -25,7 +25,7 @@
 namespace scanner
 {
 
-ScanResultsWriter::ScanResultsWriter() :
+ScanResultsWriter::ScanResultsWriter() :				//initialise
 	m_cs(),
 	m_records(),
 	m_nfFilename(""),
@@ -34,7 +34,7 @@ ScanResultsWriter::ScanResultsWriter() :
 	// Do nothing
 }
 
-void ScanResultsWriter::setBaseFilePath(const std::string& baseFilePath)
+void ScanResultsWriter::setBaseFilePath(const std::string& baseFilePath)		//set filenames
 {
 	m_cs.enter();
 	m_nfFilename = baseFilePath + ".db";
@@ -42,14 +42,14 @@ void ScanResultsWriter::setBaseFilePath(const std::string& baseFilePath)
 	m_cs.leave();
 }
 
-void ScanResultsWriter::write(const NeutralFileRecord& record)
+void ScanResultsWriter::write(const NeutralFileRecord& record)		//push records in critical section
 {
 	m_cs.enter();
 	m_records.push_back(record);
 	m_cs.leave();
 }
 
-size_t ScanResultsWriter::getNumPendingRecords()
+size_t ScanResultsWriter::getNumPendingRecords()			//return pending requests
 {
 	size_t numPending;
 
@@ -60,7 +60,7 @@ size_t ScanResultsWriter::getNumPendingRecords()
 	return numPending;
 }
 
-void ScanResultsWriter::run()
+void ScanResultsWriter::run()			//if m_record is not empty,write data to file
 {
 	std::string nfFilename, plyFilename;
 
