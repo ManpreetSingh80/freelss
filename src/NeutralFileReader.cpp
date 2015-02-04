@@ -42,7 +42,7 @@ NeutralFileReader::~NeutralFileReader()
 	close();
 }
 
-void NeutralFileReader::open(const std::string& filename)
+void NeutralFileReader::open(const std::string& filename)				//open database file
 {
 	if (m_db != NULL)
 	{
@@ -55,7 +55,7 @@ void NeutralFileReader::open(const std::string& filename)
 	}
 }
 
-void NeutralFileReader::close()
+void NeutralFileReader::close()					//close file
 {
 	if (m_stmt != NULL)
 	{
@@ -74,13 +74,13 @@ void NeutralFileReader::start()
 {
 	if (m_stmt != NULL)
 	{
-		sqlite3_finalize(m_stmt);
+		sqlite3_finalize(m_stmt);			//delete any previous statements
 		m_stmt = NULL;
 	}
 
 	// Create the prepared statement
 	char * errMsg = 0;
-	int rc = sqlite3_prepare_v2(m_db, NeutralFileReader::SELECT_SQL, -1, &m_stmt, NULL);
+	int rc = sqlite3_prepare_v2(m_db, NeutralFileReader::SELECT_SQL, -1, &m_stmt, NULL);		//prepare statement
 	if (rc != SQLITE_OK)
 	{
 		std::string error = errMsg;
@@ -146,7 +146,7 @@ bool NeutralFileReader::readNextStep(std::vector<NeutralFileRecord>& records)
 
 			firstRow = false;
 			lastStep = record.step;
-			records.push_back(record);
+			records.push_back(record);		//push data to "record" table
 		}
 		else
 		{
