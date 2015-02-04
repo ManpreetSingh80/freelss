@@ -47,33 +47,33 @@ Scanner::Scanner() :
 	m_laser(NULL),
 	m_camera(NULL),
 	m_turnTable(NULL),
-	m_laserLocations(NULL),
-	m_running(false),
-	m_detail(800),
-	m_range(360),
-	m_filename(""),
-	m_progress(0.0),
-	m_status(),
-	m_maxNumScanTries(3),                    // TODO: Place this in Settings
-	m_badLaserLocationThreshold(15),           // TODO: Place this in Settings
-	m_numSuspectedBadLaserLocations(0),
-	m_columnPoints(NULL),
-	m_startTimeSec(0),
-	m_remainingTime(0),
-	m_firstRowRightLaserCol(0),
-	m_firstRowLeftLaserCol(0),
-	m_maxNumLocations(0),
-	m_radiansBetweenLaserPlanes(0),
-	m_rightLaserLoc(),
-	m_leftLaserLoc(),
-	m_cameraLoc(),
-	m_writeRangeCsvEnabled(false),
-	m_rangeFout(),
-	m_radiansPerStep(0),
-	m_numScansBetweenLaserPlanes(0),
-	m_laserSelection(Laser::ALL_LASERS),
-	m_currentOperationName(""),
-	m_task(GENERATE_SCAN)
+	m_laserLocations(NULL),			/** Array of laser locations */
+	m_running(false),			/** Indicates if a scan is running or not */
+	m_detail(800),				/** The detail level */
+	m_range(360),				/** The degrees to scan */
+	m_filename(""),				/** The output filename */
+	m_progress(0.0),			/** The progress of the current scan */
+	m_status(),				/** Protection for the running, progress, and any other status parameters */
+	m_maxNumScanTries(3),                    // TODO: Place this in Settings	/** The maximum number of times to try a scan (at a particular rotation) before giving up */
+	m_badLaserLocationThreshold(15),           // TODO: Place this in Settings	/** The threshold for number of suspected bad laser locations before a rescan is required */
+	m_numSuspectedBadLaserLocations(0),		// Diagnostic info
+	m_columnPoints(NULL),				/** The image points for every column */
+	m_startTimeSec(0),				/** The start time in seconds */
+	m_remainingTime(0),			/** The amount of time remaining in the scan */
+	m_firstRowRightLaserCol(0),		/** Location of the first right laser line detected in the last image */
+	m_firstRowLeftLaserCol(0),		/** Location of the first left laser line detected in the last image */
+	m_maxNumLocations(0),			/** Max number of pixel locations */
+	m_radiansBetweenLaserPlanes(0),		/** The angle between the left and right laser planes */
+	m_rightLaserLoc(),			/** Location of the right laser */
+	m_leftLaserLoc(),			/** Location of the left laser */
+	m_cameraLoc(),				/** Location of the camera */
+	m_writeRangeCsvEnabled(false),		/** Indicates if we wan't to write out a CSV of the range values */
+	m_rangeFout(),				/** The range CSV output */
+	m_radiansPerStep(0),			/** The number of radians advanced from a single step */
+	m_numScansBetweenLaserPlanes(0),	/** The number of frames between the laser planes */
+	m_laserSelection(Laser::ALL_LASERS),	/** The laser to scan with */
+	m_currentOperationName(""),		/** The name of current operation taking place */
+	m_task(GENERATE_SCAN)			/** The task to perform */
 {
 	// Do nothing
 }
