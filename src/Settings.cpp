@@ -136,7 +136,7 @@ int Settings::readInt(const char * tableName, const char * columnName)
 	return value;
 }
 
-real Settings::readReal(const char * tableName, const char * columnName)
+real Settings::readReal(const char * tableName, const char * columnName)		/** Read an integer from the settings database */
 {
 	real value = 0;
 	char * errMsg = 0;
@@ -152,7 +152,7 @@ real Settings::readReal(const char * tableName, const char * columnName)
 	return value;
 }
 
-void Settings::writeReal(const char * tableName, const char * columnName, real value)
+void Settings::writeReal(const char * tableName, const char * columnName, real value)		/** Updates the given real value in the settings database */
 {
 	std::stringstream sstr;
 	sstr << value;
@@ -169,7 +169,7 @@ void Settings::writeReal(const char * tableName, const char * columnName, real v
 	}
 }
 
-void Settings::writeInt(const char * tableName, const char * columnName, int value)
+void Settings::writeInt(const char * tableName, const char * columnName, int value)		/** Updates the given integer value in the settings database */
 {
 	std::stringstream sstr;
 	sstr << value;
@@ -227,7 +227,7 @@ void Settings::createDatabase(const char * filename)
 		throw Exception("SQL Error: " + error);
 	}
 }
-
+/** The SQL for creating the database */
 const char * Settings::CREATE_DATABASE_SQL = "\n\
 CREATE TABLE GENERAL_SETTINGS (\n\
 	CAMERA_X REAL,                        -- X-compoment of camera location in mm. ie: The camera is always at X = 0.\n\
