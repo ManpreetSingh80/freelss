@@ -26,7 +26,7 @@
 
 namespace scanner
 {
-
+//CSS data
 const std::string WebContent::CSS = "\
 <style type=\"text/css\">\
 body {\
@@ -120,7 +120,7 @@ A:active  {color: #ffffff; font-size: 22px; font-weight: bold; text-shadow: #000
 	background-image: url('skull.jpg');\
 }\
 </style>";
-
+//javascript data
 const std::string WebContent::JAVASCRIPT= "\
 <script type=\"text/javascript\">\
 var imageCount = 0;\
@@ -189,7 +189,7 @@ const std::string WebContent::STEP_DELAY_DESCR = "The amount of time between ste
 const std::string WebContent::DIRECTION_PIN_DESCR = "The wiringPi pin number for the stepper motor direction or rotation";
 const std::string WebContent::RESPONSE_DELAY_DESCR = "The time it takes for the stepper controller to recognize a pin value change in microseconds";
 
-std::string WebContent::scan(const std::vector<ScanResult>& pastScans)
+std::string WebContent::scan(const std::vector<ScanResult>& pastScans)		//main menu
 {
 	std::stringstream sstr;
 	sstr << "<!DOCTYPE html><html><head>"
@@ -223,7 +223,7 @@ std::string WebContent::scan(const std::vector<ScanResult>& pastScans)
 	return sstr.str();
 }
 
-std::string WebContent::scanResult(size_t index, const ScanResult& result)
+std::string WebContent::scanResult(size_t index, const ScanResult& result)		//Page showing scan result
 {
 	std::stringstream sstr;
 
@@ -286,7 +286,7 @@ std::string WebContent::scanResult(size_t index, const ScanResult& result)
 	return sstr.str();
 }
 
-std::string WebContent::scanRunning(real progress, real remainingTime)
+std::string WebContent::scanRunning(real progress, real remainingTime)			//show running scan progress
 {
 	std::stringstream sstr;
 	sstr << "<!DOCTYPE html><html><head>"
@@ -310,7 +310,7 @@ std::string WebContent::scanRunning(real progress, real remainingTime)
 	     return sstr.str();
 }
 
-std::string WebContent::cal1()
+std::string WebContent::cal1()				//call page to prevent timeout
 {
 	std::stringstream sstr;
 	sstr << "<!DOCTYPE html><html><head>"
@@ -339,7 +339,7 @@ std::string WebContent::cal1()
 	     return sstr.str();
 }
 
-std::string WebContent::settings(const std::string& message, const std::string& rotationDegrees)
+std::string WebContent::settings(const std::string& message, const std::string& rotationDegrees)		//setting page layout
 {
 
 	Settings * settings = Settings::get();
@@ -471,7 +471,7 @@ if (!message.empty())
 
 	     return sstr.str();
 }
-
+//function to change settings
 std::string WebContent::setting(const std::string& name, const std::string& label,
 			const std::string& value, const std::string& description, const std::string& units, bool readOnly)
 {
@@ -501,7 +501,7 @@ std::string WebContent::setting(const std::string& name, const std::string& labe
 
 	return sstr.str();
 }
-
+//function to change settings
 std::string WebContent::setting(const std::string& name, const std::string& label,
 		int value, const std::string& description, const std::string& units, bool readOnly)
 {
@@ -509,7 +509,7 @@ std::string WebContent::setting(const std::string& name, const std::string& labe
 	sstr << value;
 	return setting(name, label, sstr.str(), description, units, readOnly);
 }
-
+//function to change settings
 std::string WebContent::setting(const std::string& name, const std::string& label,
 		real value, const std::string& description, const std::string& units, bool readOnly)
 {
