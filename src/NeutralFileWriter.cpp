@@ -38,7 +38,7 @@ NeutralFileWriter::~NeutralFileWriter()
 	close();
 }
 
-void NeutralFileWriter::open(const std::string& filename)
+void NeutralFileWriter::open(const std::string& filename)		//delete existing file if any,create new file
 {
 	if (m_db != NULL)
 	{
@@ -89,7 +89,7 @@ void NeutralFileWriter::open(const std::string& filename)
 	}
 }
 
-void NeutralFileWriter::close()
+void NeutralFileWriter::close()				//close file
 {
 	if (m_stmt != NULL)
 	{
@@ -104,7 +104,7 @@ void NeutralFileWriter::close()
 	}
 }
 
-void NeutralFileWriter::write(const NeutralFileRecord& record)
+void NeutralFileWriter::write(const NeutralFileRecord& record)				//write by step
 {
 	if (m_db == NULL)
 	{
@@ -127,7 +127,7 @@ void NeutralFileWriter::write(const NeutralFileRecord& record)
 	sqlite3_reset(m_stmt);
 }
 
-void NeutralFileWriter::beginBatch()
+void NeutralFileWriter::beginBatch()				//begin recording data
 {
 	// Create the prepared statement
 	prepareStatement();
@@ -142,7 +142,7 @@ void NeutralFileWriter::beginBatch()
 	}
 }
 
-void NeutralFileWriter::prepareStatement()
+void NeutralFileWriter::prepareStatement()		//prepare sql statement
 {
 	if (m_stmt != NULL)
 	{
@@ -162,7 +162,7 @@ void NeutralFileWriter::prepareStatement()
 	}
 }
 
-void NeutralFileWriter::commit()
+void NeutralFileWriter::commit()			//end ttansaction and finalize/delete statement
 {
 	if (m_stmt == NULL)
 	{
