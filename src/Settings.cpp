@@ -121,7 +121,7 @@ Settings::~Settings()
 	}
 }
 
-int Settings::readInt(const char * tableName, const char * columnName)
+int Settings::readInt(const char * tableName, const char * columnName)		/** Read an integer from the settings database */
 {
 	int value = 0;
 	char * errMsg = 0;
@@ -136,7 +136,7 @@ int Settings::readInt(const char * tableName, const char * columnName)
 	return value;
 }
 
-real Settings::readReal(const char * tableName, const char * columnName)		/** Read an integer from the settings database */
+real Settings::readReal(const char * tableName, const char * columnName)		/** Read a floating point value from the settings database */
 {
 	real value = 0;
 	char * errMsg = 0;
