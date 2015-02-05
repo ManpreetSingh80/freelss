@@ -28,7 +28,7 @@
 namespace scanner
 {
 
-real Calibrator::computeCameraZ(real pixelY)
+real Calibrator::computeCameraZ(real pixelY)				//calculate camera Z distance
 {
 	// Read the Y-value for the camera from Settings
 	Settings * settings = Settings::get();
@@ -59,7 +59,7 @@ real Calibrator::computeCameraZ(real pixelY)
 	return z;
 }
 
-bool Calibrator::detectLaserX(real * laserX, PixelLocation& topLocation, PixelLocation& bottomLocation, Laser * laser, Laser::LaserSide side)
+bool Calibrator::detectLaserX(real * laserX, PixelLocation& topLocation, PixelLocation& bottomLocation, Laser * laser, Laser::LaserSide side)		//detect Laser location through ImageProcessor and pass to computeLaserX()
 {
 	Camera * camera = Camera::getInstance();
 
@@ -153,7 +153,7 @@ bool Calibrator::detectLaserX(real * laserX, PixelLocation& topLocation, PixelLo
 	return detected;
 }
 
-real Calibrator::computeLaserX(real cameraZ, real xPixel, real yPixel)
+real Calibrator::computeLaserX(real cameraZ, real xPixel, real yPixel)			//get intersection pts. Through intersectPlane() and return distance of edge laser points
 {
 	//
 	// Compute ray going from camera through the 3D scene at the clicked location
