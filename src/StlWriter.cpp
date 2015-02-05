@@ -330,12 +330,12 @@ void StlWriter::writeTrianglesForColumn(const std::vector<NeutralFileRecord>& cu
 				// While this C point is closer to this L point than the next L point, create a triangle fan with it
 				// Don't generate triangles bigger than our maximum allowable edge distance
 				// if (distSq1 < distSq2 && distSq1 <= m_maxEdgeDistMmSq)
-				if (distSq1 < distSq2)
+				if (distSq1 < distSq2)						//if l1 is nearer to c1,c2
 				{
 					writeTriangle(l1.point, c1.point, c2.point, fout);
 					numTriangles++;
 				}
-				else
+				else								//if l2 is nearer
 				{
 					// Connect to this triangle
 					if (isValidTriangle(l2.point, l1.point, c1.point))
