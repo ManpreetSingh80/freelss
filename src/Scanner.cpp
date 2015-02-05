@@ -422,7 +422,7 @@ void Scanner::run()
 	std::cout << "Done." << std::endl;
 }
 
-void Scanner::mergeLaserResults(std::vector<NeutralFileRecord> & out, std::vector<NeutralFileRecord> & leftLaserResults, std::vector<NeutralFileRecord> & rightLaserResults)
+void Scanner::mergeLaserResults(std::vector<NeutralFileRecord> & out, std::vector<NeutralFileRecord> & leftLaserResults, std::vector<NeutralFileRecord> & rightLaserResults)		//merge left and right laser results
 {
 	// Handle the cases of single laser scans
 	if (leftLaserResults.empty())
@@ -472,13 +472,13 @@ void Scanner::mergeLaserResults(std::vector<NeutralFileRecord> & out, std::vecto
 		// Add the remaining left lasers
 		while (iLeft < leftLaserResults.size())
 		{
-			out.push_back(leftLaserResults[iLeft]);
+			out.push_back(leftLaserResults[iLeft]);			//shouldn't we define pseudostep?
 			iLeft++;
 		}
 	}
 }
 
-void Scanner::finishWritingToOutput()
+void Scanner::finishWritingToOutput()		//wait for thread to finish
 {
 	// Wait for all the I/O writing to complete
 	while (m_scanResultsWriter.getNumPendingRecords() > 0)
@@ -547,12 +547,12 @@ void Scanner::generateDebugInfo(Laser::LaserSide laserSide)
 	m_status.leave();
 	std::cout << "Done." << std::endl;
 }
-
+//take images for right and left laser,then process scan
 void Scanner::singleScan(std::vector<NeutralFileRecord> & leftLaserResults, std::vector<NeutralFileRecord> & rightLaserResults, int step, float rotation, float stepRotation,
 		                 LocationMapper& leftLocMapper, LocationMapper& rightLocMapper, TimingStats * timingStats)
 {
 	double time1 = GetTimeInSeconds();
-	m_turnTable->rotate(stepRotation);
+	m_turnTable->rotate(stepRotation);					//rotate table
 	timingStats->rotationTime += GetTimeInSeconds() - time1;
 
 	// Make sure the laser is off
@@ -616,7 +616,7 @@ void Scanner::singleScan(std::vector<NeutralFileRecord> & leftLaserResults, std:
 		processScan(leftLaserResults, step, rotation, leftLocMapper, Laser::LEFT_LASER, m_firstRowLeftLaserCol, timingStats);
 	}
 }
-
+//call ImageProcessor,LocationMapper, rtate points then write data to file 
 void Scanner::processScan(std::vector<NeutralFileRecord> & results, int step, float rotation, LocationMapper& locMapper, Laser::LaserSide laserSide, int & firstRowLaserCol, TimingStats * timingStats)
 {
 	int numLocationsMapped = 0;
@@ -634,7 +634,7 @@ void Scanner::processScan(std::vector<NeutralFileRecord> & results, int step, fl
 												timingStats->numImageProcessingRetries,
 												NULL);
 
-
+//numLocation are the red dots given by the Image Processing which need to be further processed
 	timingStats->imageProcessingTime += GetTimeInSeconds() - time1;
 
 	std::cout << "Detected " << numLocations << " laser pixels." << std::endl;
@@ -645,7 +645,7 @@ void Scanner::processScan(std::vector<NeutralFileRecord> & results, int step, fl
 	if (numLocations > 0)
 	{
 		time1 = GetTimeInSeconds();
-		locMapper.mapPoints(m_laserLocations, &m_image1, m_columnPoints, numLocations, numLocationsMapped);
+		locMapper.mapPoints(m_laserLocations, &m_image1, m_columnPoints, numLocations, numLocationsMapped);		//call LocationMapper
 		timingStats->pointMappingTime += GetTimeInSeconds() - time1;
 
 		if (numLocations != numLocationsMapped)
@@ -693,13 +693,13 @@ void Scanner::processScan(std::vector<NeutralFileRecord> & results, int step, fl
 			record.laserSide = (int) laserSide;
 			results.push_back(record);
 
-			m_scanResultsWriter.write(record);
+			m_scanResultsWriter.write(record);			//push record to critical section
 		}
 		timingStats->fileWritingTime += GetTimeInSeconds() - time1;
 	}
 }
 
-void Scanner::rotatePoints(ColoredPoint * points, float theta, int numPoints)
+void Scanner::rotatePoints(ColoredPoint * points, float theta, int numPoints)		//rotate points in xz plane
 {
 	// Build the 2D rotation matrix to rotate in the XZ plane
 	real c = cos(theta);
@@ -866,7 +866,7 @@ std::vector<ScanResult> Scanner::getPastScanResults()
 	return results;
 }
 
-std::string Scanner::getCurrentOperationName()
+std::string Scanner::getCurrentOperationName()			//return current operation name
 {
 	std::string operation;
 
@@ -877,7 +877,7 @@ std::string Scanner::getCurrentOperationName()
 	return operation;
 }
 
-void Scanner::acquireImage(Image * image)
+void Scanner::acquireImage(Image * image)		//get pixel data
 {
 	m_camera->acquireImage(image);
 }
